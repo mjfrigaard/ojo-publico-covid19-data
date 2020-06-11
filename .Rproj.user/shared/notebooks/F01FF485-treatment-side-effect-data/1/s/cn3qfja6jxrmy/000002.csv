@@ -1,0 +1,3 @@
+"0","# devtools::install_github(""tidyverse/googlesheets4"")"
+"0","library(googlesheets4)"
+"0","gs4_deauth()"

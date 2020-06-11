@@ -1,0 +1,3 @@
+"0","IvermectinID <- DrugCIDATC %>% "
+"0","  dplyr::filter(drug_atc == ""P02CF01"")"
+"0","IvermectinID"

@@ -1,0 +1,32 @@
+"0","ggmap::revgeocode(c(lon = -94.6114	, lat = 39.05635))
+"
+"2","Source : https://maps.googleapis.com/maps/api/geocode/json?latlng=39.05635,-94.6114&key=xxx
+"
+"2","Multiple addresses found, the first will be returned:
+"
+"2","  3901 Rainbow Blvd, Kansas City, KS 66160, USA
+"
+"2","  3924 Rainbow Blvd, Kansas City, KS 66103, USA
+"
+"2","  On Rainbow at 39th Southbound Farside, Kansas City, KS 66103, USA
+"
+"2","  3926 Rainbow Blvd, Kansas City, KS 66103, USA
+"
+"2","  3901 US-169, Kansas City, KS 66103, USA
+"
+"2","  Rosedale, Kansas City, KS 66103, USA
+"
+"2","  Kansas City, KS 66103, USA
+"
+"2","  Kansas City, KS, USA
+"
+"2","  Wyandotte County, KS, USA
+"
+"2","  Kansas, USA
+"
+"2","  United States
+"
+"1","[1]"
+"1"," ""3901 Rainbow Blvd, Kansas City, KS 66160, USA"""
+"1","
+"

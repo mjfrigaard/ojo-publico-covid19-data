@@ -1,0 +1,21 @@
+"0","# export"
+"0","fs::dir_create(""data/clinical-trials-gov/map-data"")"
+"0","readr::write_excel_csv(x = AllCovidTrials,"
+"0","                       path = paste0(""data/clinical-trials-gov/map-data/"","
+"0","                                     base::noquote(lubridate::today()),"
+"0","                                     ""-AllCovidTrials.csv""))"
+"0","fs::dir_ls(""data/clinical-trials-gov/map-data"")"
+"1","data/clinical-trials-gov/map-data/2020-06-10-AllCovidTrials.csv
+"
+"1",""
+"1","data/clinical-trials-gov/map-data/2020-06-10-COVID19TrialTitles.csv
+"
+"1",""
+"1","data/clinical-trials-gov/map-data/2020-06-10-COVID19Trials.csv
+"
+"1",""
+"1","data/clinical-trials-gov/map-data/2020-06-10-TidyGeoCodeTrials.csv
+"
+"1",""
+"1","data/clinical-trials-gov/map-data/2020-06-10-datawrapper-TidyGeoCodeTrials.csv
+"

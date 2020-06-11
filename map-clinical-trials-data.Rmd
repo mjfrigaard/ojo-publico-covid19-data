@@ -1,0 +1,285 @@
+---
+title: "Ojo publico - mapping clinical trial data"
+author: "Martin Frigaard"
+date: "`r Sys.Date()`"
+output: 
+  github_document: 
+    df_print: kable
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+library(tidyverse)
+library(devtools)
+library(hrbrthemes)
+library(remedy)
+# figs folder
+if (!file.exists("figs")) {
+  dir.create("figs")
+}
+# chunk options
+knitr::opts_chunk$set(
+  echo = TRUE, # show/hide all code
+  # results = "hide", # hide results
+  tidy = FALSE, # cleaner code printing
+  comment = "#> ", # better console printing
+  eval = TRUE, # turn this to FALSE stop code chunks from running
+  message = TRUE, # show messages
+  warning = FALSE, # show warnings
+  size = "small", # size of the text
+  fig.path = "figs/", # location of files
+  fig.height = 7.5, # height of figures
+  fig.width = 10 # width of figures
+) # width of figures
+# knit options
+knitr::opts_knit$set(
+  width = 78,
+  progress = FALSE
+)
+# base options
+base::options(
+  tibble.print_max = 25,
+  tibble.width = 78,
+  max.print = 999999,
+  scipen = 100000000
+)
+```
+
+# Motivation
+
+This document outlines how we mapped clinical trials for the following covid-19 treatments: Ivermectin, Remdesivir, Tocilizumab, and Hydroxychloroquine + Azithromycin
+
+## Import the clinical trial data 
+
+The code chunk below imports the clinical trials for using `Ivermectin`, `Remdesivir`, `Tocilizumab`, and `Hydroxychloroquine + Azithromycin` against COVID-19:
+
+```{r import-COVID19Trials}
+fs::dir_info("data/clinical-trials-gov/", recurse = TRUE) %>% 
+  dplyr::arrange(desc(path)) %>% 
+  dplyr::filter(str_detect(string = path, pattern = "AllCovidTrials.csv")) %>% 
+  dplyr::select(path) %>% 
+  purrr::as_vector() -> covid19_trials_csvs
+# covid19_trials_csvs[1]
+COVID19Trials <- readr::read_csv(covid19_trials_csvs[1])
+COVID19Trials %>% glimpse(78)
+```
+
+
+## Mapping trial locations
+
+Next we will be building a map of the clinical trial `locations`.
+
+## Cleaning trial locations
+
+The `locations` data separated by pipes, so we'll remove the pipe and get each location in it's own row.
+
+```{r TidyTrialLocations}
+TidyTrialLocations <- COVID19Trials %>%
+  # remove missing locations
+  dplyr::filter(!is.na(locations)) %>%
+    dplyr::mutate(locations =
+    # 1) split this on the "updated" pattern
+                  stringr::str_split(string = locations,
+                                pattern = "\\|")) %>%
+    # convert the output from split into multiple rows
+        tidyr::unnest(locations) %>%
+    # remove or from side_effect
+    dplyr::mutate(locations = str_remove_all(string = locations,
+                                               pattern = "\\|"))
+TidyTrialLocations %>% 
+  dplyr::select(drug, nct_number, locations) %>% 
+  utils::head()
+```
+
+Now we want to get the physical locations for each trial (`lat` and `lng`).
+
+```{r mapping-packages, message=FALSE, warning=FALSE}
+library(ggmap)
+library(plotly)
+library(leaflet)
+```
+
+
+### The `ggmap` package
+
+We'll start with the `ggmap`.
+
+```{r google-geocoding-api-key.R, echo=FALSE, include=FALSE, results='hide'}
+source("code/google-geocoding-api-key.R")
+```
+
+
+The `ggmap` package is a handy method for geocoding addresses (see the example code below).
+
+Test this function for one location.
+
+```{r example-geocoding}
+ggmap::geocode("Clinica Universidad de Navarra, Pamplona, Navarra, Spain")
+```
+
+This is working, so now use `ggmap::geocode()` to iterate over the locations stored in `locations`, I will use `purrr::map()` and return the result to `GeoCodeTrialLoc`.
+
+```{r get-geocodes, eval=FALSE, echo=TRUE}
+GeoCodeTrialLoc <- purrr::map_df(TidyTrialLocations$locations, ggmap::geocode)
+```
+
+Read this back in to make sure it's all been saved
+
+```{r GeoCodeTrialLoc-import, message=FALSE, warning=FALSE, include=FALSE}
+geocoded_data_paths <- fs::dir_ls("data", 
+                                  recurse = TRUE, 
+                                  regexp = "GeoCodeTrialLoc.rds")
+geocoded_data_paths <- sort(geocoded_data_paths, decreasing = TRUE)
+GeoCodeTrialLoc <- base::readRDS(file = geocoded_data_paths[1])
+```
+
+
+Check this new dataset for the `lat` and `lng`
+
+```{r confirm-GeoCodeTrialLoc}
+GeoCodeTrialLoc %>% glimpse()
+```
+
+Export this for safe keeping!
+
+```{r export-GeoCodeTrialLoc, eval=FALSE}
+# export this into the data/clinical-trials-gov/ folder with a timestamp
+saveRDS(object = GeoCodeTrialLoc,
+        file = paste0("data/clinical-trials-gov/map-data/",
+            base::noquote(lubridate::today()),
+                "-GeoCodeTrialLoc.rds"))
+```
+
+
+
+## Combine geocodes with trial data
+
+This is a tibble with two columns (`lon` and `lat`).
+
+```{r str-GeoCodeTrialLoc}
+str(GeoCodeTrialLoc)
+```
+
+Now we combine this with the other columns in `GeoCodedCovidTrials`.
+
+```{r GeoCodedCovidTrials}
+GeoCodedCovidTrials <- bind_cols(TidyTrialLocations, GeoCodeTrialLoc)
+GeoCodedCovidTrials <- GeoCodedCovidTrials %>% 
+  dplyr::select(
+    title,
+    nct_number,
+    locations,
+    lng = lon,
+    lat,
+    drug,
+    dplyr::everything())
+GeoCodedCovidTrials$popuptext <- base::paste0("<b>", 
+                                   GeoCodedCovidTrials$title, 
+                                   "</b><br />",
+                                   "<i>",
+                                   GeoCodedCovidTrials$status, 
+                                   ", n = ", 
+                                   GeoCodedCovidTrials$enrollment,
+                                   "</i><br />", 
+                                   GeoCodedCovidTrials$locations)
+head(GeoCodedCovidTrials)
+```
+
+Check a few to make sure the `geocode`s match. 
+
+```{r test_revgeocode_path, echo=FALSE, include=FALSE}
+test_revgeocode_path <- paste0("data/clinical-trials-gov/map-data/", 
+                               base::noquote(lubridate::today()), 
+                               "-test_revgeocode.rds")
+```
+
+```{r test_revgeocode, eval=FALSE}
+test_revgeocode <- sample_n(tbl = GeoCodedCovidTrials, size = 1) %>% 
+  dplyr::select(locations, lng, lat)
+```
+
+```{r import-test_revgeocode, echo=FALSE, include=FALSE}
+# import
+test_revgeocode <- readr::read_rds(path = test_revgeocode_path)
+```
+
+Check this with the `ggmap::revgeocode()` function
+
+```{r print-test_revgeocode}
+test_revgeocode
+ggmap::revgeocode(c(lon = 22.96173	, lat = 40.61164))
+```
+
+Great! Now export the full dataset.
+
+## Export map data
+
+This will export the map data as a .csv
+
+```{r export-GeoCodedCovidTrials}
+readr::write_excel_csv(as.data.frame(GeoCodedCovidTrials), 
+                 path = paste0("data/clinical-trials-gov/map-data/", 
+                               base::noquote(lubridate::today()),
+                               "-GeoCodedCovidTrials.csv"))
+```
+
+## ggmap example (basic)
+
+```{r qmplot-basic, message=FALSE, warning=FALSE}
+ggmap::qmplot(x = lng, y = lat,
+       data = GeoCodedCovidTrials,
+       maptype = "toner-lite",
+       color = I("red"))
+```
+
+## mapbox and plotly (basic)
+
+The code below creates the map with `plotly`, but first we need to add the [MAPBOX_TOKEN](https://docs.mapbox.com/help/how-mapbox-works/access-tokens/).
+
+```{r MAPBOX_TOKEN.R, echo=FALSE, include=FALSE, eval=TRUE}
+source("code/MAPBOX_TOKEN.R")
+```
+
+Plot the trials, colored by `drug`, and use the `title` and `popuptext` as the labels.
+
+```{r plot_mapbox}
+plotly::plot_mapbox(GeoCodedCovidTrials) %>% 
+  plotly::add_markers(
+    x = ~lng,
+    y = ~lat, 
+    zoom = 1.1,
+    color = ~drug,
+    text = ~popuptext,
+    hoverinfo = "text")
+```
+
+
+## Mapping with leaflet 
+
+First we get the `setView()` location 
+
+```{r setView-default, message=FALSE, warning=FALSE}
+ggmap::geocode("Caracas, Columbia")
+```
+
+Now we can use this in the `leaflet::setView()` function for the centered position on the map.
+
+```{r popuptext, message=FALSE, warning=FALSE}
+leaflet::leaflet(data = GeoCodedCovidTrials) %>% 
+  leaflet::addTiles() %>% 
+  leaflet::setView(lng = -66.86096, # columbia
+                   lat = 10.49494, 
+                   zoom = 1.2) %>% 
+  # leaflet::addMarkers(popup = ~popuptext)
+  leaflet::addCircles(lng = ~lng, 
+                       lat = ~lat, 
+                       weight = 1.5,
+                       radius = ~sqrt(enrollment) * 50,
+                       popup = ~popuptext)
+```
+
+
+
+

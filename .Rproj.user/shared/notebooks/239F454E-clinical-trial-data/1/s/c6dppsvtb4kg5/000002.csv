@@ -1,0 +1,22 @@
+"0","# AllCovidTrials %>% count(drug)"
+"0","AllCovidTrials %>%"
+"0","  dplyr::filter(drug == ""HCQ + Azithromycin"") %>%  "
+"0","  dplyr::filter(stringr::str_detect(string = title, pattern = ""COVID"")) %>%"
+"0","  dplyr::select(title, enrollment, status, locations, drug) -> HCQAzithromycinTrials"
+"0","dplyr::glimpse(HCQAzithromycinTrials)"
+"1","Rows: 51"
+"1",""
+"1","
+"
+"1","Columns: 5"
+"1",""
+"1","
+"
+"1","$ title      [3m[38;5;246m<chr>[39m[23m ""Efficacy and Safety Evaluation of Treatment Regimens in…
+$ enrollment [3m[38;5;246m<dbl>[39m[23m 258, 58, 150, 630, 444, 320, 500, 50, 300, 2770, 1550, 2…
+$ status     [3m[38;5;246m<chr>[39m[23m ""Not yet recruiting"", ""Not yet recruiting"", ""Recruiting""…
+$ locations  [3m[38;5;246m<chr>[39m[23m ""Infectious and Tropical Diseases Department, Fann Hospi…
+$ drug       [3m[38;5;246m<chr>[39m[23m ""HCQ + Azithromycin"", ""HCQ + Azithromycin"", ""HCQ + Azith…"
+"1",""
+"1","
+"

@@ -1,0 +1,142 @@
+---
+title: "SIDER - The Side Effect Resource"
+author: "Martin Frigaard"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+library(tidyverse)
+library(devtools)
+library(hrbrthemes)
+library(remedy)
+# figs folder
+if (!file.exists("figs")) {
+  dir.create("figs")
+}
+# chunk options
+knitr::opts_chunk$set(
+  echo = TRUE, # show/hide all code
+  # results = "hide", # hide results
+  tidy = FALSE, # cleaner code printing
+  comment = "#> ", # better console printing
+  eval = TRUE, # turn this to FALSE stop code chunks from running
+  message = TRUE, # show messages
+  warning = FALSE, # show warnings
+  size = "small", # size of the text
+  fig.path = "figs/", # location of files
+  fig.height = 7.5, # height of figures
+  fig.width = 10 # width of figures
+) # width of figures
+# knit options
+knitr::opts_knit$set(
+  width = 78,
+  progress = FALSE
+)
+# base options
+base::options(
+  tibble.print_max = 25,
+  tibble.width = 78,
+  max.print = 999999,
+  scipen = 100000000
+)
+```
+
+# Motivation
+
+This document outlines how we found side effects, adverse events, clinical trials, and other information for the following covid-19 treatments: Ivermectin, Remdesivir, Tocilizumab, and Hydroxychloroquine + Azithromycin
+
+## SIDER database
+
+These data come from the SIDER database. See links below:
+
+- The database: http://sideeffects.embl.de/
+
+- Journal article: http://nar.oxfordjournals.org/content/early/2015/10/19/nar.gkv1075.abstract
+
+- Example of [Fluoxetine](http://sideeffects.embl.de/drugs/3386/).
+
+## Import the data
+
+```{r import, message=FALSE, warning=FALSE}
+DrugNames <- readr::read_delim(file = "data/sider-data/drug_names.tsv",
+                               delim = "\t",
+                               escape_double = FALSE,
+                               col_names = FALSE,
+                               trim_ws = FALSE) %>%
+  # set names
+             purrr::set_names(x = .,
+                              nm = "drug_cid", "drug_name")
+
+DrugAtc <- read_delim(file = "data/sider-data/drug_atc.tsv",
+                      delim = "\t",
+                      escape_double = FALSE,
+                      col_names = FALSE,
+                      trim_ws = FALSE) %>%
+            purrr::set_names(x = .,
+                              nm = "drug_cid", "drug_atc")
+```
+
+Join these two tables on CID
+
+```{r DrugCIDATC}
+DrugCIDATC <- DrugAtc %>%
+  left_join(x = ., y = DrugNames, by = "drug_cid")
+DrugCIDATC %>% glimpse()
+```
+
+Import the `MEDDRA` side effect data
+
+```{r MeddraAllSe, message=FALSE, warning=FALSE}
+MeddraAllSe <- readr::read_delim("data/sider-data/meddra_all_se.tsv", delim = "\t",
+                                 escape_double = FALSE,
+                                 col_names = FALSE,
+                                 trim_ws = TRUE) %>%
+              purrr::set_names(x = .,
+                            nm = "STITCH_compound_id01", "STITCH_compound_id02",
+                            "UMLS_concept_id", "MedDRA_concept_type",
+                            "UMLS_concept_id_for_MedDRA_term",
+                            "side_effect_name")
+
+head(MeddraAllSe)
+```
+
+Now we can see which drugs have side effects in the SIDER database.
+
+### Ivermectin
+
+First we look up the ID in the 
+
+```{r IvermectinID}
+IvermectinID <- DrugCIDATC %>% 
+  dplyr::filter(drug_atc == "P02CF01")
+IvermectinID
+```
+
+
+```{r IvermectinID-STITCH_compound_id01-STITCH_compound_id02}
+IvermectinAllSe <- MeddraAllSe %>% 
+  dplyr::filter(STITCH_compound_id01 == "CID106435110" | 
+                  STITCH_compound_id02 == "CID106435110")
+utils::head(IvermectinAllSe)
+```
+
+
+### Remdesivir
+
+This drug does not have an ATC number, but Wikipedia lists a PubChem CID of `121304016`
+
+```{r remdesivir-check-cid}
+MeddraAllSe %>% 
+  dplyr::filter(STITCH_compound_id01 == "121304016")
+```
+
+
+### Tocilizumab
+
+### Hydroxychloroquine   
+
+### Azithromycin
+

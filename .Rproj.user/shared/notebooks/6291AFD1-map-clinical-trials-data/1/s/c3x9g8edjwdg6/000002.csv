@@ -1,0 +1,5 @@
+"0","# export this into the data/clinical-trials-gov/ folder with a timestamp"
+"0","saveRDS(object = GeoCodeTrialLoc,"
+"0","        file = paste0(""data/clinical-trials-gov/map-data/"","
+"0","            base::noquote(lubridate::today()),"
+"0","                ""-GeoCodeTrialLoc.rds""))"

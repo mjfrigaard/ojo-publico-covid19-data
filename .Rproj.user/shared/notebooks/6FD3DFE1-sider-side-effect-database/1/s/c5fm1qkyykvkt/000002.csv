@@ -1,0 +1,17 @@
+"0","DrugCIDATC <- DrugAtc %>%"
+"0","  left_join(x = ., y = DrugNames, by = ""drug_cid"")"
+"0","DrugCIDATC %>% glimpse()"
+"1","Rows: 1,560"
+"1",""
+"1","
+"
+"1","Columns: 3"
+"1",""
+"1","
+"
+"1","$ drug_cid  [3m[38;5;246m<chr>[39m[23m ""CID100000085"", ""CID100000119"", ""CID100000119"", ""CID10000…
+$ drug_atc  [3m[38;5;246m<chr>[39m[23m ""A16AA01"", ""L03AA03"", ""N03AG03"", ""L01XD04"", ""V03AF03"", ""V…
+$ drug_name [3m[38;5;246m<chr>[39m[23m ""carnitine"", ""gamma-aminobutyric"", ""gamma-aminobutyric"", …"
+"1",""
+"1","
+"

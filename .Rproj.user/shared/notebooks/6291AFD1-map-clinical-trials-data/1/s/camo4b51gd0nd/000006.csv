@@ -1,0 +1,4 @@
+"0","ggmap::qmplot(x = lng, y = lat,"
+"0","       data = GeoCodedCovidTrials,"
+"0","       maptype = ""toner-lite"","
+"0","       color = I(""red""))"

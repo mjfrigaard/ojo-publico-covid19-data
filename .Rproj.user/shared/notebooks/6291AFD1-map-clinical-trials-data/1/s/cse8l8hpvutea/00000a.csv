@@ -1,0 +1,23 @@
+"0","ggmap::revgeocode(c(lon = 22.96173	, lat = 40.61164))"
+"2","Multiple addresses found, the first will be returned:
+"
+"2","  Konstantinoupoleos 49, Thessaloniki 546 42, Greece
+"
+"2","  Konstantinoupoleos 86, Thessaloniki 546 42, Greece
+"
+"2","  Thessaloniki 546 42, Greece
+"
+"2","  Agia Triada, Thessaloníki, Greece
+"
+"2","  Thessaloniki, Greece
+"
+"2","  Central Macedonia, Greece
+"
+"2","  Decentralized Administration of Macedonia and Thrace, Greece
+"
+"2","  Greece
+"
+"1","[1]"
+"1"," ""Konstantinoupoleos 49, Thessaloniki 546 42, Greece"""
+"1","
+"

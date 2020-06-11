@@ -1,0 +1,4 @@
+"0","IvermectinAllSe <- MeddraAllSe %>% "
+"0","  dplyr::filter(STITCH_compound_id01 == ""CID106435110"" | "
+"0","                  STITCH_compound_id02 == ""CID106435110"")"
+"0","utils::head(IvermectinAllSe)"

@@ -1,0 +1,20 @@
+"0","TocilizumabTrials <- AllCovidTrials %>%"
+"0","  dplyr::filter(drug == ""Tocilizumab"") %>%  "
+"0","  dplyr::select(title, enrollment, status, locations, drug)"
+"0","dplyr::glimpse(TocilizumabTrials)"
+"1","Rows: 54"
+"1",""
+"1","
+"
+"1","Columns: 5"
+"1",""
+"1","
+"
+"1","$ title      [3m[38;5;246m<chr>[39m[23m ""Tocilizumab in COVID-19 Pneumonia (TOCIVID-19)"", ""Study…
+$ enrollment [3m[38;5;246m<dbl>[39m[23m 400, 310, 32, 300, 500, 260, 30, 276, 40, 216, 398, 100,…
+$ status     [3m[38;5;246m<chr>[39m[23m ""Recruiting"", ""Not yet recruiting"", ""Completed"", ""Recrui…
+$ locations  [3m[38;5;246m<chr>[39m[23m ""Azienda Ospedaliera \""SS. Antonio e Biagio e C. Arrigo\…
+$ drug       [3m[38;5;246m<chr>[39m[23m ""Tocilizumab"", ""Tocilizumab"", ""Tocilizumab"", ""Tocilizuma…"
+"1",""
+"1","
+"

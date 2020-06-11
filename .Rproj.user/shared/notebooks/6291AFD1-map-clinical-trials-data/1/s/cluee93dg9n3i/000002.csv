@@ -1,0 +1,4 @@
+"0","readr::write_excel_csv(as.data.frame(GeoCodedCovidTrials), "
+"0","                 path = paste0(""data/clinical-trials-gov/map-data/"", "
+"0","                               base::noquote(lubridate::today()),"
+"0","                               ""-GeoCodedCovidTrials.csv""))"

@@ -1,0 +1,58 @@
+"0","fs::dir_info(""data/clinical-trials-gov/"", recurse = TRUE) %>% "
+"0","  dplyr::arrange(desc(path)) %>% "
+"0","  dplyr::filter(str_detect(string = path, pattern = ""AllCovidTrials.csv"")) %>% "
+"0","  dplyr::select(path) %>% "
+"0","  purrr::as_vector() -> covid19_trials_csvs"
+"0","# covid19_trials_csvs[1]"
+"0","COVID19Trials <- readr::read_csv(covid19_trials_csvs[1])"
+"2","Parsed with column specification:
+cols(
+  .default = col_character(),
+  rank = [32mcol_double()[39m,
+  enrollment = [32mcol_double()[39m,
+  results_first_posted = [33mcol_logical()[39m
+)
+"
+"2","See spec(...) for full column specifications.
+"
+"0","COVID19Trials %>% glimpse(78)"
+"1","Rows: 167"
+"1",""
+"1","
+"
+"1","Columns: 29"
+"1",""
+"1","
+"
+"1","$ source                  [3m[38;5;246m<chr>[39m[23m ""data/clinical-trials-gov/2020-06-10/2020-0…
+$ rank                    [3m[38;5;246m<dbl>[39m[23m 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, …
+$ nct_number              [3m[38;5;246m<chr>[39m[23m ""NCT04390594"", ""NCT04321278"", ""NCT04374903""…
+$ title                   [3m[38;5;246m<chr>[39m[23m ""Efficacy and Safety Evaluation of Treatmen…
+$ acronym                 [3m[38;5;246m<chr>[39m[23m ""SEN-CoV-Fadj"", NA, ""COVID19-HOPE"", ""COVIDO…
+$ status                  [3m[38;5;246m<chr>[39m[23m ""Not yet recruiting"", ""Recruiting"", ""Not ye…
+$ study_results           [3m[38;5;246m<chr>[39m[23m ""No Results Available"", ""No Results Availab…
+$ conditions              [3m[38;5;246m<chr>[39m[23m ""COVID-19"", ""Coronavirus Infections|Pneumon…
+$ interventions           [3m[38;5;246m<chr>[39m[23m ""Drug: Hydroxychloroquine|Drug: Hydroxychlo…
+$ outcome_measures        [3m[38;5;246m<chr>[39m[23m ""SARS-CoV-2 viral load level|Vital status|P…
+$ sponsor_collaborators   [3m[38;5;246m<chr>[39m[23m ""Institut Pasteur de Dakar|Fann Hospital, S…
+$ gender                  [3m[38;5;246m<chr>[39m[23m ""All"", ""All"", ""All"", ""All"", ""All"", ""All"", ""…
+$ age                     [3m[38;5;246m<chr>[39m[23m ""15 Years and older   (Child, Adult, Older …
+$ phases                  [3m[38;5;246m<chr>[39m[23m ""Phase 3"", ""Phase 3"", ""Not Applicable"", ""Ph…
+$ enrollment              [3m[38;5;246m<dbl>[39m[23m 258, 440, 58, 150, 630, 456, 250, 444, 320,…
+$ funded_bys              [3m[38;5;246m<chr>[39m[23m ""Other"", ""Other|Industry"", ""Other"", ""Other""…
+$ study_type              [3m[38;5;246m<chr>[39m[23m ""Interventional"", ""Interventional"", ""Interv…
+$ study_designs           [3m[38;5;246m<chr>[39m[23m ""Allocation: Randomized|Intervention Model:…
+$ other_i_ds              [3m[38;5;246m<chr>[39m[23m ""2020-002"", ""30155020.5.1001.0071"", ""20 KHC…
+$ start_date              [3m[38;5;246m<chr>[39m[23m ""June 1, 2020"", ""March 28, 2020"", ""May 1, 2…
+$ primary_completion_date [3m[38;5;246m<chr>[39m[23m ""December 1, 2020"", ""August 30, 2020"", ""Aug…
+$ completion_date         [3m[38;5;246m<chr>[39m[23m ""June 1, 2021"", ""August 30, 2020"", ""Septemb…
+$ first_posted            [3m[38;5;246m<chr>[39m[23m ""May 15, 2020"", ""March 25, 2020"", ""May 5, 2…
+$ results_first_posted    [3m[38;5;246m<lgl>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ last_update_posted      [3m[38;5;246m<chr>[39m[23m ""May 27, 2020"", ""May 27, 2020"", ""May 5, 202…
+$ locations               [3m[38;5;246m<chr>[39m[23m ""Infectious and Tropical Diseases Departmen…
+$ study_documents         [3m[38;5;246m<chr>[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ url                     [3m[38;5;246m<chr>[39m[23m ""https://ClinicalTrials.gov/show/NCT0439059…
+$ drug                    [3m[38;5;246m<chr>[39m[23m ""HCQ + Azithromycin"", ""HCQ + Azithromycin"",…"
+"1",""
+"1","
+"

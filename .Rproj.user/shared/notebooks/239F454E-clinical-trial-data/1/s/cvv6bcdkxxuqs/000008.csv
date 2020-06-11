@@ -1,0 +1,20 @@
+"0","IvermectinRCT <- AllCovidTrials %>%"
+"0","  filter(drug == ""Ivermectin"") %>%  "
+"0","  dplyr::select(title, enrollment, status, locations, drug)"
+"0","dplyr::glimpse(IvermectinRCT)"
+"1","Rows: 19"
+"1",""
+"1","
+"
+"1","Columns: 5"
+"1",""
+"1","
+"
+"1","$ title      [3m[38;5;246m<chr>[39m[23m ""Efficacy of Ivermectin as Add on Therapy in COVID19 Pat…
+$ enrollment [3m[38;5;246m<dbl>[39m[23m 100, 50, 100, 40, 100, 60, 30, 45, 100, 60, 100, 200, 40…
+$ status     [3m[38;5;246m<chr>[39m[23m ""Completed"", ""Recruiting"", ""Recruiting"", ""Not yet recrui…
+$ locations  [3m[38;5;246m<chr>[39m[23m ""General Directorate of Medical City, Bagdad, Baghdad, I…
+$ drug       [3m[38;5;246m<chr>[39m[23m ""Ivermectin"", ""Ivermectin"", ""Ivermectin"", ""Ivermectin"", …"
+"1",""
+"1","
+"

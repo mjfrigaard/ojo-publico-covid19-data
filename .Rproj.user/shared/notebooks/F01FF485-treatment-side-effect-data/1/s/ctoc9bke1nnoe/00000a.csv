@@ -1,0 +1,54 @@
+"0","writeLines(AzithromycinSE$medscape_adverse_effects)
+"
+"1","Frequency greater than 10%:   
+Diarrhea (52.8%);  
+Nausea (32.6%);  
+Abdominal pain (27%);  
+Loose stool (19.1%);  
+
+Frequency 1-10%: 
+Elevated ALT, AST, creatinine (4-6%);   
+Elevated LDH, bilirubin (1-3%);   
+Community-acquired pneumonia;    
+Pain at injection site (6.5%);   
+Diarrhea (4.3%);   
+Nausea (3.9%);   
+Local inflammation (3.1%);   
+Abdominal pain (2.7%);   
+Vomiting (1.4%);   
+Pelvic inflammatory disease  
+Diarrhea (8.5%);   
+Nausea (6.6%);   
+Vaginitis (2.8%);   
+Abdominal pain (1.9%);   
+Anorexia (1.9%);   
+Rash and pruritus (1.9%);   
+
+Frequency <1%: 
+Dyspepsia; 
+Flatulence; 
+Mucositis;    
+Oral Moniliasis;   
+Gastritis;   
+Headache;    
+Somnolence;   
+Bronchospasm;   
+Taste perversion;   
+Leukopenia;    
+Neutropenia;   
+Decreased platelet count;   
+Elevated serum alkaline phosphatase;   
+
+Postmarketing Reports: 
+Allergic: Arthralgia, edema, urticaria and angioedema;   
+Cardiovascular: Arrhythmias (eg, ventricular tachycardia), hypotension, QT prolongation, and torsades de pointes;    
+Gastrointestinal: Anorexia, constipation, dyspepsia, flatulence, vomiting/diarrhea, pseudomembranous colitis, pancreatitis, oral candidiasis, pyloric stenosis, and reports of tongue discoloration;     
+General: Asthenia, paresthesia, fatigue, malaise and anaphylaxis (including fatalities);    
+Genitourinary: Interstitial nephritis and acute renal failure and vaginitis;    
+Hematopoietic: Thrombocytopenia;    
+Liver/biliary: Abnormal liver function, hepatitis, cholestatic jaundice, hepatic necrosis, and hepatic failure;    
+Nervous system: Convulsions, dizziness/vertigo, headache, somnolence, hyperactivity, nervousness, agitation and syncope;      
+Psychiatric: Aggressive reaction and anxiety;     
+Skin/appendages: Pruritus, serious skin reactions including, erythema multiforme, AGEP, Stevens-Johnson syndrome, toxic epidermal necrolysis, and DRESS;     
+Special senses: Hearing disturbances including hearing loss, deafness and/or tinnitus and reports of taste/smell perversion and/or loss;
+"

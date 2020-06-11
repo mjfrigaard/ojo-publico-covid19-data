@@ -1,0 +1,5 @@
+"0","geocoded_data_paths <- fs::dir_ls(""data"", "
+"0","                                  recurse = TRUE, "
+"0","                                  regexp = ""GeoCodeTrialLoc.rds"")"
+"0","geocoded_data_paths <- sort(geocoded_data_paths, decreasing = TRUE)"
+"0","GeoCodeTrialLoc <- base::readRDS(file = geocoded_data_paths[1])"

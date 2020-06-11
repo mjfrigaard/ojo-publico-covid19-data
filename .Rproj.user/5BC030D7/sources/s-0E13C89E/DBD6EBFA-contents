@@ -1,0 +1,165 @@
+---
+title: "Ojo publico - registered clinical trials"
+author: "Martin Frigaard"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+library(tidyverse)
+library(devtools)
+library(hrbrthemes)
+library(remedy)
+# figs folder
+if (!file.exists("figs")) {
+  dir.create("figs")
+}
+# chunk options
+knitr::opts_chunk$set(
+  echo = TRUE, # show/hide all code
+  # results = "hide", # hide results
+  tidy = FALSE, # cleaner code printing
+  comment = "#> ", # better console printing
+  eval = TRUE, # turn this to FALSE stop code chunks from running
+  message = TRUE, # show messages
+  warning = FALSE, # show warnings
+  size = "small", # size of the text
+  fig.path = "figs/", # location of files
+  fig.height = 7.5, # height of figures
+  fig.width = 10 # width of figures
+) # width of figures
+# knit options
+knitr::opts_knit$set(
+  width = 78,
+  progress = FALSE
+)
+# base options
+base::options(
+  tibble.print_max = 25,
+  tibble.width = 78,
+  max.print = 999999,
+  scipen = 100000000
+)
+```
+
+# Motivation
+
+This document outlines the clinical trials for the following covid-19 treatments: Ivermectin, Remdesivir, Tocilizumab, and Hydroxychloroquine + Azithromycin
+
+## Download data
+
+Head over to clincaltrials.gov and do a search for the following terms,
+
+- Under **Condition or disease**, enter `COVID`
+
+
+- Under **Other terms**, choose one of the following
+
+`Ivermectin`, `Remdesivir`, `Tocilizumab`, and `Hydroxychloroquine + Azithromycin`
+
+## Import
+
+This will import the most recent data 
+
+```{r Import, message=FALSE, message=FALSE}
+# This will import the most recent data 
+tday <- lubridate::today()
+# tday
+fs::dir_create(tday)
+# import
+map_csv_files <- fs::dir_ls(path = paste0("data/clinical-trials-gov/", tday), 
+                            recurse = TRUE)
+AllCovidTrials <- map_csv_files %>%
+  map_dfr(.x = ., .f = read_csv, .id = "source") 
+# clean up source
+trial_paths <- sort(unique(AllCovidTrials$source))
+# trial_paths
+# trial_paths[1]
+AllCovidTrials <- AllCovidTrials %>% 
+  janitor::clean_names(case = "snake") %>% 
+  dplyr::mutate(drug = case_when(
+    stringr::str_detect(string = source , pattern = trial_paths[1]) ~ "HCQ + Azithromycin",
+    stringr::str_detect(string = source , pattern = trial_paths[2]) ~ "Ivermectin",
+    stringr::str_detect(string = source , pattern = trial_paths[3]) ~ "Remdesivir",
+    stringr::str_detect(string = source , pattern = trial_paths[4]) ~ "Tocilizumab")) %>% 
+  # make these all distinct
+    dplyr::distinct()
+AllCovidTrials %>% 
+  dplyr::count(source, drug) %>% 
+  tidyr::pivot_wider(names_from = drug, values_from = n)
+```
+
+## Clinical trial data per drug
+
+We are now going to search for the clinical trials open on each drug.
+
+### Ivermectin
+
+These are the `Ivermectin` drug trials.
+
+```{r IvermectinRCT}
+IvermectinRCT <- AllCovidTrials %>%
+  filter(drug == "Ivermectin") %>%  
+  dplyr::select(title, enrollment, status, locations, drug)
+dplyr::glimpse(IvermectinRCT)
+```
+
+
+### Remdesivir trials
+
+These trials are available for `Remdesivir`.
+
+```{r RemdesivirRCT}
+AllCovidTrials %>%
+  dplyr::filter(drug == "Remdesivir") %>%  
+  dplyr::select(title, enrollment, status, locations, drug) -> RemdesivirRCT
+dplyr::glimpse(RemdesivirRCT)
+```
+
+
+
+### Tocilizumab
+
+These are the `Tocilizumab` COVID-19 trials.
+
+```{r create-TocilizumabTrials}
+TocilizumabTrials <- AllCovidTrials %>%
+  dplyr::filter(drug == "Tocilizumab") %>%  
+  dplyr::select(title, enrollment, status, locations, drug)
+dplyr::glimpse(TocilizumabTrials)
+```
+
+
+### Hydroxychloroquine + Azithromycin
+
+These were searched together.
+
+```{r AllCovidTrials}
+# AllCovidTrials %>% count(drug)
+AllCovidTrials %>%
+  dplyr::filter(drug == "HCQ + Azithromycin") %>%  
+  dplyr::filter(stringr::str_detect(string = title, pattern = "COVID")) %>%
+  dplyr::select(title, enrollment, status, locations, drug) -> HCQAzithromycinTrials
+dplyr::glimpse(HCQAzithromycinTrials)
+```
+
+
+Now we're down to a single trial per row.
+
+### Export the `COVID19TrialTitles` data
+
+Now we can export them as a .csv.
+
+```{r export-AllCovidTrials}
+# export
+fs::dir_create("data/clinical-trials-gov/map-data")
+readr::write_excel_csv(x = AllCovidTrials,
+                       path = paste0("data/clinical-trials-gov/map-data/",
+                                     base::noquote(lubridate::today()),
+                                     "-AllCovidTrials.csv"))
+# verify
+fs::dir_ls("data/clinical-trials-gov/map-data")
+```
+

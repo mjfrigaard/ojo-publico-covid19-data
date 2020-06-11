@@ -1,0 +1,147 @@
+---
+title: "Ojo publico - drug side effects"
+author: "Martin Frigaard"
+date: "`r Sys.Date()`"
+output: 
+  github_document: 
+    df_print: kable
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+library(tidyverse)
+library(devtools)
+library(hrbrthemes)
+library(remedy)
+# figs folder
+if (!file.exists("figs")) {
+  dir.create("figs")
+}
+# chunk options
+knitr::opts_chunk$set(
+  echo = TRUE, # show/hide all code
+  # results = "hide", # hide results
+  tidy = FALSE, # cleaner code printing
+  comment = "#> ", # better console printing
+  eval = TRUE, # turn this to FALSE stop code chunks from running
+  message = TRUE, # show messages
+  warning = FALSE, # show warnings
+  size = "small", # size of the text
+  fig.path = "figs/", # location of files
+  fig.height = 7.5, # height of figures
+  fig.width = 10 # width of figures
+) # width of figures
+# knit options
+knitr::opts_knit$set(
+  width = 78,
+  progress = FALSE
+)
+# base options
+base::options(
+  tibble.print_max = 25,
+  tibble.width = 78,
+  max.print = 999999,
+  scipen = 100000000
+)
+```
+
+# Motivation
+
+This document outlines how we found side effects, adverse events, clinical trials, and other information for the following covid-19 treatments: Ivermectin, Remdesivir, Tocilizumab, and Hydroxychloroquine + Azithromycin
+
+## Medlineplus Googlesheet data
+
+The code below imports data from a Google Drive spreadsheet of drugs and side effects collected from [medlineplus.gov](https://medlineplus.gov/druginformation.html) and [medscape](https://reference.medscape.com/).
+
+```{r side-effects}
+# devtools::install_github("tidyverse/googlesheets4")
+library(googlesheets4)
+gs4_deauth()
+```
+
+```{r SideEffects}
+SideEffects <- googlesheets4::read_sheet(ss = "https://docs.google.com/spreadsheets/d/12_4fGi2UNnnMiWvhn8VNTGi0mXhl5bf_h1Swo8xG2Sc/edit#gid=0", 
+                                         sheet = "side-effects") %>% janitor::clean_names()
+SideEffects <- SideEffects %>% dplyr::glimpse(78)
+```
+
+Start by wrangling the `Azithromycin` side effects. 
+
+```{r AzithromycinSE}
+AzithromycinSE <- SideEffects %>% 
+  filter(drug == "Azithromycin") %>% 
+  select(drug, medscape_adverse_effects)
+writeLines(AzithromycinSE$medscape_adverse_effects)
+```
+
+I want to split this on the semi-colon `;` and new line `\n`, which I can identify with the pattern below 
+
+```{r test-AzithromycinSE-pattern-01}
+str_view_all(AzithromycinSE$medscape_adverse_effects, pattern = "\\; ")
+```
+
+
+```{r}
+AzithromycinSE %>%  
+        dplyr::mutate(medscape_adverse_effects = 
+                        # 1) split this on the "updated" pattern
+             stringr::str_split(string = medscape_adverse_effects, 
+                                pattern = "\\; ")) %>% 
+                       # 2) convert the output from split into multiple rows
+        tidyr::unnest(medscape_adverse_effects) %>% 
+    # check this to see what is happening 
+    dplyr::select(drug, medscape_adverse_effects) %>% 
+    # remove \n
+     dplyr::mutate(medscape_adverse_effects = 
+                     stringr::str_remove_all(string = medscape_adverse_effects, 
+                                             pattern = "\n"))
+```
+
+
+## Datawrapper table format
+
+This format will include "Drug, Class, Adverse effects, Comorbidities"
+
+```{r test-x}
+# adverse events
+CovidDrugAdverseEvents <- CovidDrugs %>%
+  dplyr::select(Drug = drug, 
+                side_effect) %>% 
+  dplyr::group_by(Drug) %>%
+  dplyr::summarize(
+    `Adverse effects` = paste(side_effect, collapse = ', ')) %>% 
+  dplyr::mutate(`Adverse effects` = stringr::str_to_sentence(`Adverse effects`))
+CovidDrugAdverseEvents
+# Comorbidities
+CovidDrugComorbidities <- CovidDrugs %>% 
+  dplyr::select(Drug = drug, 
+                primary_comorbidity, 
+                secondary_comorbidity) %>% 
+  tidyr::unite(primary_comorbidity, secondary_comorbidity, 
+               col = "Comorbidities", sep = ", ") %>% 
+  dplyr::mutate(Comorbidities = stringr::str_to_sentence(Comorbidities)) %>%
+  dplyr::distinct() 
+CovidDrugComorbidities
+# Drug and class
+CovidDrugClass <- CovidDrugs %>% 
+  dplyr::select(Drug = drug, 
+                Class = drug_class) %>% 
+  dplyr::mutate(Class = stringr::str_to_sentence(Class)) %>%
+  dplyr::distinct()
+# join
+DataWrapperCovidDrugs <- dplyr::inner_join(CovidDrugClass, 
+           CovidDrugAdverseEvents, by = "Drug") %>% 
+  dplyr::inner_join(x = ., y = CovidDrugComorbidities, by = "Drug")
+knitr::kable(DataWrapperCovidDrugs)
+```
+
+Export these data as .csv
+
+```{r export-DataWrapperCovidDrugs}
+fs::dir_create("data/medline-side-effects")
+readr::write_csv(as.data.frame(DataWrapperCovidDrugs), 
+                 path = "data/medline-side-effects/DataWrapperCovidDrugs.csv")
+```
+

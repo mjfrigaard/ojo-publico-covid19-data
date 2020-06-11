@@ -1,0 +1,8 @@
+"0","plotly::plot_mapbox(GeoCodedCovidTrials) %>% "
+"0","  plotly::add_markers("
+"0","    x = ~lng,"
+"0","    y = ~lat, "
+"0","    zoom = 1.1,"
+"0","    color = ~drug,"
+"0","    text = ~popuptext,"
+"0","    hoverinfo = ""text"")"

@@ -76,7 +76,7 @@ AzithromycinSE <- SideEffects %>%
 writeLines(AzithromycinSE$medscape_adverse_effects)
 ```
 
-I want to split this on the semi-colon `;` and new line `\n`, which I can identify with the pattern below 
+I want to split this on the semi-colon `;` and new line `\n`, which I can identify with the pattern below:
 
 ```{r test-AzithromycinSE-pattern-01}
 str_view_all(AzithromycinSE$medscape_adverse_effects, pattern = "\\; ")
